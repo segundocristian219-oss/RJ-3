@@ -14,11 +14,11 @@ global.prems = []
 
 global.emoji = '📎'
 global.emoji2 = '🏞️'
-global.namebot = 'SHADOW BOT'
-global.botname = 'SHADOW BOT'
+global.namebot = '𝐘𝐀𝐈𝐑 𝐁𝐎𝐓'
+global.botname = '𝐘𝐀𝐈𝐑 𝐁𝐎𝐓'
 global.banner = 'https://files.catbox.moe/igdrbi.jpg'
-global.packname = 'SHADOW BOT'
-global.author = '𝖣𝖾𝗌𝖺𝗋𝗅𝗅𝖺𝖽𝗈 𝗉𝗈𝗋 HERNANDEZ'
+global.packname = '𝐘𝐀𝐈𝐑 𝐁𝐎𝐓'
+global.author = '𝖣𝖾𝗌𝖺𝗋𝗅𝗅𝖺𝖽𝗈 𝗉𝗈𝗋 𝐇𝐄𝐑𝐍𝐀𝐍𝐃𝐄𝐙'
 global.sessions = 'SHADOW BOT'
 
 global.APIs = {
