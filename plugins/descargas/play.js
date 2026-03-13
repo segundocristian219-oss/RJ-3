@@ -1,5 +1,11 @@
+import { exec } from 'child_process'
+import { promisify } from 'util'
+import fs from 'fs/promises'
+import path from 'path'
+import os from 'os'
 import axios from 'axios'
 
+const execAsync = promisify(exec)
 const apikey = 'causa-ec43262f206b3305'
 
 const axiosClient = axios.create({
@@ -27,7 +33,7 @@ const searchYoutube = async (query) => {
 }
 
 const getYoutubeData = async (videoUrl) => {
-  const url = `https://rest.apicausas.xyz/api/v1/descargas/youtube?apikey=${apikey}&url=${encodeURIComponent(videoUrl)}&type=audio`
+  const url = `https://rest.apicausas.xyz/api/v1/descargas/youtube?apikey=${apikey}&url=${encodeURIComponent(videoUrl)}&type=video`
   const { data } = await axios.get(url)
   if (!data.status || !data.data?.download?.url) throw new Error('Error en el servidor de descarga.')
   return data.data
@@ -55,8 +61,19 @@ Ejemplo: *.play autos edits*`)
     const res = await axios.get(download.url, { responseType: 'arraybuffer' })
     const buffer = Buffer.from(res.data)
 
+    const tmpMp4 = path.join(os.tmpdir(), `yt_${Date.now()}.mp4`)
+    const tmpMp3 = path.join(os.tmpdir(), `yt_${Date.now()}.mp3`)
+
+    await fs.writeFile(tmpMp4, buffer)
+
+    await execAsync(`ffmpeg -y -i "${tmpMp4}" -vn -ab 128k "${tmpMp3}"`)
+
+    const mp3Buffer = await fs.readFile(tmpMp3)
+
+    Promise.all([fs.unlink(tmpMp4), fs.unlink(tmpMp3)]).catch(()=>{})
+
     await conn.sendMessage(m.chat, {
-      audio: buffer,
+      audio: mp3Buffer,
       mimetype: 'audio/mpeg',
       fileName: `${title}.mp3`
     }, { quoted: m })
