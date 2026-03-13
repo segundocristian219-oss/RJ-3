@@ -1,9 +1,9 @@
 import fetch from 'node-fetch'
 
 const ALLOWED_MENTIONS = [
-  '576016540674@s.whatsapp.net',
-  '100644740407530@lid',
-  '576016540674'
+  '5212211947300@s.whatsapp.net',
+  '131847560413219@lid',
+  '5212211947300'
 ]
 
 const gemini = {
@@ -84,10 +84,10 @@ let handler = async (m, { conn }) => {
   }
 
 const prompt = `
-Eres SHADOW BOT, un asistente maso menos serio  y burlón. 
+Eres 𝐘𝐀𝐈𝐑 𝐁𝐎𝐓, un asistente maso menos serio  y burlón. 
 - Si el mensaje contiene cualquier tipo de groserías, responde de igual manera, usa cualquier tipo de groserías las que sean insulta también a su mamá, cuando respondas habla como un pandillero lo haría, no uses palabras elegantes, y también cuando hables igual habla con groserías de este tipo; "puto", "pendejo" "puta", "putita", todo ese tipo de groserías.
 - Si el mensaje no contiene groserías, responde de forma amistosa, ingeniosa y entretenida. 
-- Si el usuario pregunta "quién te creó" o algo similar, responde: "Por HERNANDEZ, el mejor UwU".
+- Si el usuario pregunta "quién te creó" o algo similar, responde: "Por 𝐇𝐄𝐑𝐍𝐀𝐍𝐃𝐄𝐙, el mejor UwU".
 Mensaje del usuario: "${text}"
 `;
 
