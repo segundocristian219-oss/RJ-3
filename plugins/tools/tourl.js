@@ -5,6 +5,20 @@ import axios from 'axios'
 import ffmpeg from 'fluent-ffmpeg'
 import crypto from 'crypto'
 import { fileTypeFromBuffer } from 'file-type'
+import { fileURLToPath } from 'url'
+
+const userAgents = [
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+  'Mozilla/5.0 (Linux; Android 10)',
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)',
+  'Mozilla/5.0 (X11; Linux x86_64)',
+  'Mozilla/5.0 (iPad; CPU OS 13_2 like Mac OS X)'
+]
+
+function randomUA() {
+  return userAgents[Math.floor(Math.random() * userAgents.length)]
+}
 
 function unwrapMessage(m) {
   let n = m
@@ -40,36 +54,73 @@ function extFromMime(mime, fallback = 'bin') {
   return fallback
 }
 
-async function uploadToCatbox(filePath) {
+async function uploadToCatbox(filePath, reply) {
   const buffer = await fs.promises.readFile(filePath)
-  const { ext, mime } = await fileTypeFromBuffer(buffer) || {}
-  const random = crypto.randomBytes(5).toString('hex')
-  const filename = `${random}.${ext || 'bin'}`
+  const detected = await fileTypeFromBuffer(buffer)
+  const ext = detected?.ext || 'bin'
+  const mime = detected?.mime || 'application/octet-stream'
+  const filename = `${Date.now()}_${crypto.randomBytes(3).toString('hex')}.${ext}`
+
+  await reply(`📦 Preparando upload\nExt: ${ext}\nMime: ${mime}\nSize: ${buffer.length}`)
 
   const form = new FormData()
   form.append('reqtype', 'fileupload')
   form.append('fileToUpload', buffer, {
     filename,
-    contentType: mime || 'application/octet-stream'
+    contentType: mime
   })
 
-  const res = await axios.post(
-    'https://catbox.moe/user/api.php',
-    form,
-    {
-      headers: form.getHeaders(),
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity
-    }
-  )
+  let lastError = null
 
-  if (!res.data) throw new Error('Catbox no devolvió URL')
-  return res.data.trim()
+  for (let i = 0; i < 3; i++) {
+    try {
+      const ua = randomUA()
+
+      await reply(`🌐 Intento ${i + 1}\nUA: ${ua}`)
+
+      const res = await axios({
+        method: 'POST',
+        url: 'https://catbox.moe/user/api.php',
+        data: form,
+        headers: {
+          ...form.getHeaders(),
+          'User-Agent': ua,
+          'Accept': '*/*',
+          'Connection': 'keep-alive'
+        },
+        timeout: 60000,
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
+        validateStatus: () => true
+      })
+
+      await reply(`📡 STATUS: ${res.status}`)
+
+      if (res.status === 200 && typeof res.data === 'string') {
+        return res.data.trim()
+      }
+
+      lastError = `Status: ${res.status}\n${JSON.stringify(res.data)}`
+      await reply(`⚠️ Error intento ${i + 1}\n${lastError}`)
+
+    } catch (e) {
+      lastError = e.message
+      await reply(`❌ Axios fallo\n${e.message}`)
+    }
+  }
+
+  throw new Error(`Catbox fallo\n${lastError}`)
 }
 
 let handler = async (msg, { conn, command, wa }) => {
   const chatId = msg.key.remoteJid
   const pref = global.prefixes?.[0] || '.'
+
+  const debug = async (txt) => {
+    try {
+      await conn.sendMessage(chatId, { text: txt }, { quoted: msg })
+    } catch {}
+  }
 
   const ctx = msg.message?.extendedTextMessage?.contextInfo
   const rawQuoted = ctx?.quotedMessage
@@ -78,7 +129,7 @@ let handler = async (msg, { conn, command, wa }) => {
   if (!quoted) {
     return conn.sendMessage(
       chatId,
-      { text: `✳️ Usa:\n${pref}${command}\nResponde a una imagen, video, sticker o audio` },
+      { text: `✳️ Usa:\n${pref}${command}\nResponde a media` },
       { quoted: msg }
     )
   }
@@ -108,10 +159,14 @@ let handler = async (msg, { conn, command, wa }) => {
       throw new Error('Tipo no permitido')
     }
 
-    const WA = ensureWA(wa, conn)
-    if (!WA) throw new Error('Baileys no disponible')
+    await debug(`📂 Tipo detectado: ${type}`)
 
-    const tmpDir = path.join(path.dirname(new URL(import.meta.url).pathname), 'tmp')
+    const WA = ensureWA(wa, conn)
+    if (!WA) throw new Error('WA no disponible')
+
+    const __dirname = path.dirname(fileURLToPath(import.meta.url))
+    const tmpDir = path.join(__dirname, 'tmp')
+
     if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true })
 
     const ext = type === 'sticker' ? 'webp' : extFromMime(media.mimetype)
@@ -123,17 +178,27 @@ let handler = async (msg, { conn, command, wa }) => {
     )
 
     const ws = fs.createWriteStream(rawPath)
-    for await (const chunk of stream) ws.write(chunk)
+
+    for await (const chunk of stream) {
+      ws.write(chunk)
+    }
+
     ws.end()
     await new Promise(r => ws.on('finish', r))
 
     const size = fs.statSync(rawPath).size
-    if (size > 200 * 1024 * 1024) throw new Error('Archivo supera 200MB')
+
+    await debug(`📥 Descargado\nPath: ${rawPath}\nSize: ${size}`)
+
+    if (size > 200 * 1024 * 1024) throw new Error('Archivo muy grande')
 
     finalPath = rawPath
 
     if (type === 'audio' && ext !== 'mp3') {
       finalPath = path.join(tmpDir, `${Date.now()}_audio.mp3`)
+
+      await debug('🎧 Convirtiendo a mp3')
+
       await new Promise((res, rej) => {
         ffmpeg(rawPath)
           .audioCodec('libmp3lame')
@@ -142,20 +207,24 @@ let handler = async (msg, { conn, command, wa }) => {
           .on('error', rej)
           .save(finalPath)
       })
+
       fs.unlinkSync(rawPath)
+
+      await debug(`✅ Convertido: ${finalPath}`)
     }
 
-    const url = await uploadToCatbox(finalPath)
+    const url = await uploadToCatbox(finalPath, debug)
 
     await conn.sendMessage(
       chatId,
-      { text: `✅ Archivo subido a Catbox\n\n${url}` },
+      { text: `✅ Subido\n${url}` },
       { quoted: msg }
     )
 
     await conn.sendMessage(chatId, { react: { text: '✅', key: msg.key } })
 
   } catch (e) {
+    await debug(`❌ ERROR GLOBAL\n${e.stack || e.message}`)
     await conn.sendMessage(
       chatId,
       { text: `❌ Error\n${e.message}` },
