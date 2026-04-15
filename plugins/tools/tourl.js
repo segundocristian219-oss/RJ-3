@@ -2,6 +2,7 @@ import FormData from 'form-data'
 import axios from 'axios'
 import crypto from 'crypto'
 import { fileTypeFromBuffer } from 'file-type'
+import { Readable } from 'stream'
 
 const userAgents = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
@@ -54,10 +55,13 @@ async function uploadToCatbox(buffer) {
   for (let i = 0; i < 3; i++) {
     try {
       const form = new FormData()
+      const stream = Readable.from(buffer)
+
       form.append('reqtype', 'fileupload')
-      form.append('fileToUpload', buffer, {
+      form.append('fileToUpload', stream, {
         filename,
-        contentType: mime
+        contentType: mime,
+        knownLength: buffer.length
       })
 
       const res = await axios.post(
