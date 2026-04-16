@@ -15,24 +15,24 @@ let handler = async (m, { conn }) => {
 
   const owners = [
     {
-      name: '𝖠𝗇𝗀𝖾𝗅.𝗑𝗒𝗓',
-      desc: `𝖢𝗋𝖾𝖺𝖽𝗈𝗋 𝗒 𝖣𝖾𝗌𝖺𝗋𝗋𝗈𝗅𝗅𝖺𝖽𝗈𝗋 𝖯𝗋𝗂𝗇𝖼𝗂𝗉𝖺𝗅 𝖣𝖾 𝖠𝗇𝗀𝖾𝗅 𝖡𝗈𝗍 👑`,
-      image: 'https://cdn.russellxz.click/b1af0aef.jpeg',
+      name: 'Hernandez.𝗑𝗒𝗓',
+      desc: `𝖢𝗋𝖾𝖺𝖽𝗈𝗋 𝗒 𝖣𝖾𝗌𝖺𝗋𝗋𝗈𝗅𝗅𝖺𝖽𝗈𝗋 𝖯𝗋𝗂𝗇𝖼𝗂𝗉𝖺𝗅 𝖣𝖾 𝑹𝑱 𝑩𝑶𝑻 👑`,
+      image: 'https://cdn.russellxz.click/9dd34316.jpg',
       buttons: [
-        { name: 'WhatsApp', url: 'https://wa.me/5215911153853' }
+        { name: 'WhatsApp', url: 'https://wa.me/5212213479743' }
       ]
     },
     {
-      name: '𝖠𝗇𝗀𝖾𝗅.𝖿𝗀𝗓',
+      name: 'Rich.𝖿𝗀𝗓',
       desc: '𝖴𝗇𝗈 𝖣𝖾 𝖫𝗈𝗌 𝖨𝗇𝗏𝖾𝗋𝗌𝗂𝗈𝗇𝗂𝗌𝗍𝖺𝗌 𝖯𝗋𝗂𝗇𝖼𝗂𝗉𝖺𝗅𝖾𝗌 🗣️',
-      image: 'https://cdn.russellxz.click/295d5247.jpeg',
+      image: 'https://cdn.russellxz.click/39157e06.jpg',
       buttons: [
-        { name: 'WhatsApp', url: 'https://wa.me/5215584393251' }
+        { name: 'WhatsApp', url: 'https://wa.me/5216644962918' }
       ]
     },
     {
-      name: '𝖠𝗇𝗀𝖾𝗅.𝗌𝗍𝖺𝖿𝖿',
-      desc: '𝖬𝗂𝖾𝗆𝖻𝗋𝗈 𝖮𝖿𝗂𝖼𝗂𝖺𝗅 𝖣𝖾𝗅 𝖤𝗊𝗎𝗂𝗉𝗈 𝖠𝗇𝗀𝖾𝗅 𝖡𝗈𝗍 ⚙️',
+      name: 'Hernandez.𝗌𝗍𝖺𝖿𝖿',
+      desc: '𝖬𝗂𝖾𝗆𝖻𝗋𝗈 𝖮𝖿𝗂𝖼𝗂𝖺𝗅 𝖣𝖾𝗅 𝖤𝗊𝗎𝗂𝗉𝗈 𝑹𝑱 𝑩𝑶𝑻 ⚙️',
       image: 'https://files.catbox.moe/piu53i.jpg',
       buttons: [
         { name: 'WhatsApp', url: 'https://wa.me/5212213479743' }
