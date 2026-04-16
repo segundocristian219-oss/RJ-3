@@ -139,7 +139,7 @@ const handler = async (m, { conn }) => {
 `
 
   await conn.sendMessage(m.chat, {
-    react: { text: "🧾", key: m.key }
+    react: { text: '🧾', key: m.key }
   })
 
   await conn.sendMessage(
@@ -147,14 +147,12 @@ const handler = async (m, { conn }) => {
     {
       image: { url: "https://files.catbox.moe/7yukoq.jpg" },
       caption: menu,
-      gifPlayback: true,
       mentions: [m.sender]
     },
     { quoted: m }
   )
 }
 
-handler.customPrefix = /^\.?(menu|menuall)$/i
-handler.command = new RegExp()
-
-export default handler
+handler.customPrefix = /^\.?(menu|menuall)$/i;
+handler.command = new RegExp;
+export default handler;
