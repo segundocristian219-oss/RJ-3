@@ -14,10 +14,10 @@ global.prems = []
 
 global.emoji = '📎'
 global.emoji2 = '🏞️'
-global.namebot = '𝑹𝑱 𝑩𝑶𝑻'
-global.botname = '𝑹𝑱 𝑩𝑶𝑻'
+global.namebot = '𝐗 𝐁𝐎𝐓 '
+global.botname = '𝐗 𝐁𝐎𝐓'
 global.banner = 'https://cdn.russellxz.click/7a4ceb3b.jpg'
-global.packname = '𝑹𝑱 𝑩𝑶𝑻'
+global.packname = '𝐗 𝐁𝐎𝐓'
 global.author = '𝖣𝖾𝗌𝖺𝗋𝗅𝗅𝖺𝖽𝗈 𝗉𝗈𝗋 𝐇𝐄𝐑𝐍𝐀𝐍𝐃𝐄𝐙'
 global.sessions = 'SHADOW BOT'
 
